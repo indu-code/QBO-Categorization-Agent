@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Transaction Details | QBO Agent</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+            background: #070b14;
+            color: #f5f7fb;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 245px;
+            min-height: 100vh;
+            background: #0b1120;
+            border-right: 1px solid #1c2638;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 4px 12px 28px;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3568ff, #6d4aff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 8px 25px rgba(55, 92, 255, 0.25);
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 9px;
+            color: #8f9db5;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: #121b2c;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(
+                90deg,
+                rgba(50, 92, 220, 0.95),
+                rgba(44, 74, 170, 0.8)
+            );
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 18px 14px;
+            border-top: 1px solid #1a2435;
+        }
+
+        .ai-label {
+            color: #7294ff;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .ai-text {
+            color: #71809a;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* MAIN */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 74px;
+            border-bottom: 1px solid #1a2435;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 34px;
+            background: rgba(7, 11, 20, 0.95);
+        }
+
+        .company-label {
+            color: #72819a;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .company {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .online-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #19d68a;
+            box-shadow: 0 0 10px rgba(25, 214, 138, 0.7);
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: #cbd4e4;
+            font-size: 13px;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #304fba;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* CONTENT */
+
+        .content {
+            padding: 30px 34px 50px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: #8190a8;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
+
+        .back:hover {
+            color: white;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            color: #7285a5;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 30px;
+            letter-spacing: -0.7px;
+        }
+
+        .header-description {
+            margin-top: 8px;
+            color: #8190a7;
+            font-size: 13px;
+        }
+
+        /* STATUS BADGE */
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 650;
+            border: 1px solid #263752;
+            background: #101a2b;
+        }
+
+        .header-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #f0b947;
+        }
+
+        /* GRID */
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.35fr 0.9fr;
+            gap: 18px;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* CARD */
+
+        .card {
+            background: #0b1321;
+            border: 1px solid #1d2a3f;
+            border-radius: 13px;
+            padding: 22px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: #152238;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9db8ff;
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .card-subtitle {
+            color: #6f7e96;
+            font-size: 11px;
+        }
+
+        /* TRANSACTION */
+
+        .transaction-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+
+        .vendor-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #182943, #22385b);
+            border: 1px solid #2d4467;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 750;
+            color: #a9bfff;
+        }
+
+        .vendor-name {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .vendor-company {
+            color: #74839b;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .amount-box {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .amount-label {
+            color: #6f7d93;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .amount {
+            font-size: 23px;
+            font-weight: 750;
+            margin-top: 3px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .detail {
+            background: #0d1727;
+            border: 1px solid #18263b;
+            border-radius: 9px;
+            padding: 13px;
+        }
+
+        .detail-label {
+            color: #687790;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+
+        .detail-value {
+            color: #dce3ed;
+            font-size: 13px;
+            font-weight: 550;
+        }
+
+        /* RECOMMENDATION */
+
+        .recommendation {
+            border: 1px solid #273b61;
+            background:
+                radial-gradient(
+                    circle at 100% 0,
+                    rgba(47, 91, 207, 0.13),
+                    transparent 40%
+                ),
+                #0d1727;
+        }
+
+        .category {
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .category-description {
+            color: #77869e;
+            font-size: 12px;
+            margin-bottom: 22px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .metric {
+            padding: 13px;
+            border-radius: 9px;
+            background: #0a111d;
+            border: 1px solid #1b2a40;
+        }
+
+        .metric-label {
+            color: #687890;
+            font-size: 10px;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            font-size: 13px;
+            font-weight: 650;
+            color: #dbe3ef;
+        }
+
+        .confidence-high {
+            color: #37d89b;
+        }
+
+        .confidence-medium {
+            color: #f1b63f;
+        }
+
+        .evidence {
+            margin-top: 14px;
+            padding: 13px;
+            border-radius: 9px;
+            background: #0a111d;
+            border: 1px solid #1b2a40;
+        }
+
+        .evidence-label {
+            color: #687890;
+            font-size: 10px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .evidence-text {
+            color: #aab5c5;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* ROUTING */
+
+        .route-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-radius: 10px;
+            background: #101a2b;
+            border: 1px solid #283950;
+        }
+
+        .route-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .route-icon {
+            width: 37px;
+            height: 37px;
+            border-radius: 10px;
+            background: rgba(241, 183, 60, 0.12);
+            border: 1px solid rgba(241, 183, 60, 0.2);
+            color: #f1ba4b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .route-title {
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .route-description {
+            color: #6f7f97;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .route-badge {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(240, 177, 45, 0.12);
+            color: #f0ba4c;
+            border: 1px solid rgba(240, 177, 45, 0.25);
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        /* CLIENT CONFIRMATION */
+
+        .confirmation-card {
+            border-color: rgba(238, 177, 48, 0.35);
+            background:
+                radial-gradient(
+                    circle at 100% 0,
+                    rgba(221, 154, 23, 0.09),
+                    transparent 45%
+                ),
+                #0b1321;
+        }
+
+        .confirmation-message {
+            color: #8d9bb0;
+            font-size: 12px;
+            line-height: 1.55;
+            margin-bottom: 16px;
+        }
+
+        .transaction-summary {
+            padding: 12px;
+            border-radius: 9px;
+            background: #101a2b;
+            border: 1px solid #24344d;
+            margin-bottom: 15px;
+        }
+
+        .summary-vendor {
+            font-weight: 650;
+            font-size: 13px;
+        }
+
+        .summary-amount {
+            color: #8492a8;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .options {
+            display: grid;
+            gap: 8px;
+        }
+
+        .option-button {
+            width: 100%;
+            text-align: left;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #293950;
+            background: #101a2b;
+            color: #cbd5e4;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 550;
+            transition: 0.18s;
+        }
+
+        .option-button:hover {
+            border-color: #466de1;
+            background: #14223a;
+            color: white;
+        }
+
+        .option-number {
+            display: inline-flex;
+            width: 23px;
+            height: 23px;
+            border-radius: 6px;
+            align-items: center;
+            justify-content: center;
+            background: #1c2b45;
+            color: #90aaff;
+            margin-right: 8px;
+            font-size: 11px;
+        }
+
+        .email-button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #2b477c;
+            background: #13223a;
+            color: #a9bfff;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .email-button:hover {
+            background: #192c4c;
+        }
+
+        .confirmation-sent {
+            margin-top: 11px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(26, 193, 127, 0.09);
+            border: 1px solid rgba(26, 193, 127, 0.2);
+            color: #48dca5;
+            font-size: 11px;
+        }
+
+        /* PROPOSAL */
+
+        .proposal-card {
+            border-color: #263a59;
+        }
+
+        .proposal-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 11px 0;
+            border-bottom: 1px solid #172337;
+        }
+
+        .proposal-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .proposal-label {
+            color: #6e7d94;
+            font-size: 11px;
+        }
+
+        .proposal-value {
+            color: #dbe3ed;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 650;
+        }
+
+        .status-pending {
+            background: rgba(239, 175, 48, 0.12);
+            color: #f0ba4c;
+            border: 1px solid rgba(239, 175, 48, 0.22);
+        }
+
+        .status-confirmed {
+            background: rgba(75, 119, 255, 0.12);
+            color: #91aaff;
+            border: 1px solid rgba(75, 119, 255, 0.22);
+        }
+
+        .status-posted {
+            background: rgba(28, 195, 127, 0.12);
+            color: #43dca2;
+            border: 1px solid rgba(28, 195, 127, 0.22);
+        }
+
+        .approve-button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 17px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #315de5, #426cf0);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(49, 93, 229, 0.18);
+        }
+
+        .approve-button:hover {
+            filter: brightness(1.08);
+        }
+
+        /* QBO RESULT */
+
+        .qbo-result {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #1b2a40;
+        }
+
+        .qbo-success {
+            padding: 12px;
+            border-radius: 9px;
+            background: rgba(25, 193, 126, 0.08);
+            border: 1px solid rgba(25, 193, 126, 0.2);
+            color: #4cdda6;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .qbo-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .qbo-label {
+            color: #6e7d94;
+            font-size: 11px;
+        }
+
+        .qbo-value {
+            color: #bfc9d9;
+            font-size: 11px;
+            font-family: monospace;
+        }
+
+        /* AUDIT */
+
+        .audit-item {
+            position: relative;
+            padding-left: 25px;
+            padding-bottom: 20px;
+        }
+
+        .audit-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .audit-line {
+            position: absolute;
+            left: 5px;
+            top: 10px;
+            bottom: 0;
+            width: 1px;
+            background: #27364e;
+        }
+
+        .audit-item:last-child .audit-line {
+            display: none;
+        }
+
+        .audit-dot {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: #315de5;
+            border: 2px solid #0b1321;
+            box-shadow: 0 0 0 1px #315de5;
+        }
+
+        .audit-action {
+            font-size: 12px;
+            font-weight: 650;
+            color: #dce3ed;
+        }
+
+        .audit-meta {
+            color: #718099;
+            font-size: 10px;
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+
+        .empty-audit {
+            color: #687790;
+            font-size: 12px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1050px) {
+            .sidebar {
+                width: 210px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 750px) {
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                padding: 22px;
+            }
+
+            .topbar {
+                padding: 0 22px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .details-grid,
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">✦</div>
+            <div class="brand-name">QBO Agent</div>
+        </div>
+
+        <nav class="nav">
+
+            <a href="{{ url_for('home') }}" class="nav-item">
+                <span class="nav-icon">⌂</span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('home') }}#transactions" class="nav-item active">
+                <span class="nav-icon">☷</span>
+                Transactions
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">♧</span>
+                Clients
+            </a>
+
+            <a href="#audit" class="nav-item">
+                <span class="nav-icon">◈</span>
+                Audit Trail
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="ai-label">✦ Powered by AI</div>
+            <div class="ai-text">
+                Smarter categorization.<br>
+                Faster closes.
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+                <div class="company-label">
+                    Connected QBO Company
+                </div>
+
+                <div class="company">
+                    <span class="online-dot"></span>
+                    {{ transaction.company_name }}
+                </div>
+            </div>
+
+            <div class="user">
+                <div class="avatar">I</div>
+                <span>Indu</span>
+                <span>⌄</span>
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="content">
+
+            <a
+                class="back"
+                href="{{ url_for('home') }}"
+            >
+                ← Back to Dashboard
+            </a>
+
+
+            <!-- HEADER -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <div class="eyebrow">
+                        Transaction Review
+                    </div>
+
+                    <h1>{{ transaction.vendor }}</h1>
+
+                    <div class="header-description">
+                        Review categorization, routing, approval and QBO write status.
+                    </div>
+
+                </div>
+
+
+                <div class="header-status">
+
+                    <span class="header-status-dot"></span>
+
+                    {% if proposal.status == "Approved & Posted" %}
+                        Approved & Posted
+
+                    {% elif proposal.status == "Client Confirmed" %}
+                        Client Confirmed
+
+                    {% else %}
+                        Pending Approval
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- TWO COLUMN LAYOUT -->
+
+            <div class="grid">
+
+
+                <!-- LEFT COLUMN -->
+
+                <div class="left-column">
+
+
+                    <!-- TRANSACTION CARD -->
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+
+                                <div class="card-icon">▣</div>
+
+                                <div>
+                                    <h2>Transaction</h2>
+                                    <div class="card-subtitle">
+                                        Source transaction
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="transaction-main">
+
+                            <div class="vendor-avatar">
+                                {{ transaction.vendor[:1]|upper }}
+                            </div>
+
+                            <div>
+
+                                <div class="vendor-name">
+                                    {{ transaction.vendor }}
+                                </div>
+
+                                <div class="vendor-company">
+                                    {{ transaction.company_name }}
+                                </div>
+
+                            </div>
+
+                            <div class="amount-box">
+
+                                <div class="amount-label">
+                                    Amount
+                                </div>
+
+                                <div class="amount">
+                                    ₹{{ "%.2f"|format(transaction.amount) }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="details-grid">
+
+                            <div class="detail">
+
+                                <div class="detail-label">
+                                    Transaction ID
+                                </div>
+
+                                <div class="detail-value">
+                                    #{{ transaction.id }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="detail">
+
+                                <div class="detail-label">
+                                    Company
+                                </div>
+
+                                <div class="detail-value">
+                                    {{ transaction.company_name }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="detail">
+
+                                <div class="detail-label">
+                                    Memo
+                                </div>
+
+                                <div class="detail-value">
+                                    {{ transaction.memo }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="detail">
+
+                                <div class="detail-label">
+                                    Current Category
+                                </div>
+
+                                <div class="detail-value">
+                                    Uncategorized
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- AGENT RECOMMENDATION -->
+
+                    <div class="card recommendation">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+
+                                <div class="card-icon">✦</div>
+
+                                <div>
+                                    <h2>Agent Recommendation</h2>
+
+                                    <div class="card-subtitle">
+                                        Categorization reasoning
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="category">
+                            {{ result.category }}
+                        </div>
+
+                        <div class="category-description">
+                            Recommended category based on transaction evidence.
+                        </div>
+
+
+                        <div class="metrics">
+
+                            <div class="metric">
+
+                                <div class="metric-label">
+                                    Confidence
+                                </div>
+
+                                <div class="metric-value
+                                    {% if result.confidence >= 0.90 %}
+                                        confidence-high
+                                    {% else %}
+                                        confidence-medium
+                                    {% endif %}
+                                ">
+                                    {{ (result.confidence * 100)|round|int }}%
+                                </div>
+
+                            </div>
+
+
+                            <div class="metric">
+
+                                <div class="metric-label">
+                                    Method
+                                </div>
+
+                                <div class="metric-value">
+                                    {{ result.method }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="metric">
+
+                                <div class="metric-label">
+                                    LLM Usage
+                                </div>
+
+                                <div class="metric-value">
+
+                                    {% if result.llm_called %}
+                                        Used
+                                    {% else %}
+                                        Not required
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="evidence">
+
+                            <div class="evidence-label">
+                                Evidence
+                            </div>
+
+                            <div class="evidence-text">
+                                {{ result.evidence }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ROUTING -->
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+
+                                <div class="card-icon">⇢</div>
+
+                                <div>
+                                    <h2>Routing Decision</h2>
+
+                                    <div class="card-subtitle">
+                                        Confidence-based workflow
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="route-box">
+
+                            <div class="route-left">
+
+                                <div class="route-icon">
+                                    {% if result.route == "Client confirmation" %}
+                                        !
+                                    {% elif result.route == "Firm review" %}
+                                        ◇
+                                    {% else %}
+                                        ✓
+                                    {% endif %}
+                                </div>
+
+                                <div>
+
+                                    <div class="route-title">
+                                        {{ result.route }}
+                                    </div>
+
+                                    <div class="route-description">
+
+                                        {% if result.route == "Client confirmation" %}
+                                            Client input required before approval.
+
+                                        {% elif result.route == "Firm review" %}
+                                            Firm review required before posting.
+
+                                        {% else %}
+                                            High-confidence transaction eligible for posting.
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="route-badge">
+                                {{ result.route }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- AUDIT TRAIL -->
+
+                    <div class="card" id="audit">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+
+                                <div class="card-icon">◈</div>
+
+                                <div>
+                                    <h2>Audit Trail</h2>
+
+                                    <div class="card-subtitle">
+                                        Recorded actions for this transaction
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        {% if audit_log %}
+
+                            {% for entry in audit_log %}
+
+                                <div class="audit-item">
+
+                                    <div class="audit-dot"></div>
+                                    <div class="audit-line"></div>
+
+                                    <div class="audit-action">
+                                        {{ entry.action }}
+                                    </div>
+
+                                    <div class="audit-meta">
+                                        {{ entry.company_name }}
+                                        · {{ entry.vendor }}
+                                        · {{ entry.new_category }}
+                                        · {{ entry.status }}
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <div class="empty-audit">
+                                No audit events recorded yet.
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- RIGHT COLUMN -->
+
+                <div class="right-column">
+
+
+                    <!-- CLIENT CONFIRMATION -->
+
+                    {% if result.route == "Client confirmation" %}
+
+                    <div class="card confirmation-card">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+
+                                <div class="card-icon">?</div>
+
+                                <div>
+                                    <h2>Client Confirmation</h2>
+
+                                    <div class="card-subtitle">
+                                        Low-confidence transaction
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="confirmation-message">
+
+                            The agent could not confidently determine
+                            the correct category. Select the category
+                            confirmed by the client.
+
+                        </div>
+
+
+                        <div class="transaction-summary">
+
+                            <div class="summary-vendor">
+                                {{ transaction.vendor }}
+                            </div>
+
+                            <div class="summary-amount">
+                                ₹{{ "%.2f"|format(transaction.amount) }}
+                                · {{ transaction.memo }}
+                            </div>
+
+                        </div>
+
+
+                        {% if not proposal.confirmation_sent %}
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'send_confirmation',
+                                transaction_id=transaction.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="email-button"
+                            >
+                                ✉ Send Confirmation Email
+                            </button>
+
+                        </form>
+
+                        {% else %}
+
+                        <div class="confirmation-sent">
+                            ✓ Confirmation sent via Email
+                        </div>
+
+                        {% endif %}
+
+
+                        <div style="margin-top:18px; margin-bottom:10px; color:#77869e; font-size:11px;">
+                            Client options
+                        </div>
+
+
+                        <div class="options">
+
+                            {% for option in result.client_options %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'client_confirm',
+                                    transaction_id=transaction.id,
+                                    option=loop.index
+                                ) }}"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="option-button"
+                                >
+
+                                    <span class="option-number">
+                                        {{ loop.index }}
+                                    </span>
+
+                                    {{ option }}
+
+                                </button>
+
+                            </form>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- PROPOSAL -->
+
+                    <div class="card proposal-card">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+
+                                <div class="card-icon">✓</div>
+
+                                <div>
+                                    <h2>Proposal</h2>
+
+                                    <div class="card-subtitle">
+                                        Approval-gated QBO action
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="proposal-row">
+
+                            <div class="proposal-label">
+                                Company
+                            </div>
+
+                            <div class="proposal-value">
+                                {{ proposal.company_name }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="proposal-row">
+
+                            <div class="proposal-label">
+                                Vendor
+                            </div>
+
+                            <div class="proposal-value">
+                                {{ proposal.vendor }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="proposal-row">
+
+                            <div class="proposal-label">
+                                Previous category
+                            </div>
+
+                            <div class="proposal-value">
+                                {{ proposal.old_category }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="proposal-row">
+
+                            <div class="proposal-label">
+                                Proposed category
+                            </div>
+
+                            <div class="proposal-value">
+                                {{ proposal.new_category or result.category }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="proposal-row">
+
+                            <div class="proposal-label">
+                                Confidence
+                            </div>
+
+                            <div class="proposal-value">
+                                {{ (proposal.confidence * 100)|round|int }}%
+                            </div>
+
+                        </div>
+
+
+                        <div class="proposal-row">
+
+                            <div class="proposal-label">
+                                Status
+                            </div>
+
+                            <div class="proposal-value">
+
+                                {% if proposal.status == "Approved & Posted" %}
+
+                                    <span class="status-badge status-posted">
+                                        ● Approved & Posted
+                                    </span>
+
+                                {% elif proposal.status == "Client Confirmed" %}
+
+                                    <span class="status-badge status-confirmed">
+                                        ● Client Confirmed
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status-badge status-pending">
+                                        ● Pending Approval
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        {% if proposal.status in ["Pending Approval", "Client Confirmed"] %}
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'approve',
+                                transaction_id=transaction.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="approve-button"
+                            >
+                                Approve &amp; Post to QuickBooks
+                            </button>
+
+                        </form>
+
+                        {% endif %}
+
+
+                        <!-- QBO RESPONSE -->
+
+                        {% if proposal.qbo_response %}
+
+                        <div class="qbo-result">
+
+                            <div class="card-subtitle" style="margin-bottom:12px;">
+                                QuickBooks Write Result
+                            </div>
+
+
+                            <div class="qbo-success">
+                                ✓ {{ proposal.qbo_response.message }}
+                            </div>
+
+
+                            <div class="qbo-row">
+
+                                <span class="qbo-label">
+                                    Request ID
+                                </span>
+
+                                <span class="qbo-value">
+                                    {{ proposal.qbo_response.request_id }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="qbo-row">
+
+                                <span class="qbo-label">
+                                    QBO Transaction ID
+                                </span>
+
+                                <span class="qbo-value">
+                                    {{ proposal.qbo_response.qbo_transaction_id }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

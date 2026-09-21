@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>QBO Agent Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+            background: #070b14;
+            color: #f5f7fb;
+        }
+
+        /* ---------- APP LAYOUT ---------- */
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+
+        .sidebar {
+            width: 245px;
+            min-height: 100vh;
+            background: #0b1120;
+            border-right: 1px solid #1c2638;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 4px 12px 28px;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3568ff, #6d4aff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 8px 25px rgba(55, 92, 255, 0.25);
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 9px;
+            color: #8f9db5;
+            font-size: 14px;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #121b2c;
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(
+                90deg,
+                rgba(50, 92, 220, 0.95),
+                rgba(44, 74, 170, 0.8)
+            );
+            color: white;
+            box-shadow: inset 0 0 0 1px rgba(102, 145, 255, 0.25);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 18px 14px;
+            border-top: 1px solid #1a2435;
+        }
+
+        .ai-label {
+            color: #7294ff;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .ai-text {
+            color: #71809a;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* ---------- MAIN ---------- */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ---------- TOPBAR ---------- */
+
+        .topbar {
+            height: 74px;
+            border-bottom: 1px solid #1a2435;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 34px;
+            background: rgba(7, 11, 20, 0.92);
+        }
+
+        .company-label {
+            color: #72819a;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .company {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .online-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #19d68a;
+            box-shadow: 0 0 10px rgba(25, 214, 138, 0.7);
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: #cbd4e4;
+            font-size: 13px;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #304fba;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* ---------- CONTENT ---------- */
+
+        .content {
+            padding: 30px 34px 50px;
+            max-width: 1650px;
+            margin: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 26px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+            letter-spacing: -0.8px;
+        }
+
+        .subtitle {
+            color: #8491a7;
+            font-size: 14px;
+            line-height: 1.55;
+            max-width: 700px;
+        }
+
+        .sync-box {
+            background: #0d1626;
+            border: 1px solid #1d2a40;
+            border-radius: 10px;
+            padding: 12px 16px;
+            min-width: 180px;
+        }
+
+        .sync-title {
+            color: #8794aa;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .sync-value {
+            color: #d8dfeb;
+            font-size: 12px;
+        }
+
+        /* ---------- KPI CARDS ---------- */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            min-height: 130px;
+            border-radius: 13px;
+            padding: 20px;
+            background: #0d1524;
+            border: 1px solid #1c2a40;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card.blue {
+            border-color: rgba(59, 112, 255, 0.45);
+            background:
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(50, 91, 220, 0.18),
+                    transparent 50%
+                ),
+                #0d1524;
+        }
+
+        .stat-card.purple {
+            border-color: rgba(126, 82, 255, 0.4);
+            background:
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(113, 66, 255, 0.16),
+                    transparent 50%
+                ),
+                #0d1524;
+        }
+
+        .stat-card.green {
+            border-color: rgba(20, 183, 126, 0.4);
+            background:
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(0, 185, 128, 0.14),
+                    transparent 50%
+                ),
+                #0d1524;
+        }
+
+        .stat-card.orange {
+            border-color: rgba(226, 157, 32, 0.4);
+            background:
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(220, 150, 20, 0.13),
+                    transparent 50%
+                ),
+                #0d1524;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: #93a0b5;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            width: 31px;
+            height: 31px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #172238;
+            color: #79a0ff;
+        }
+
+        .stat-number {
+            margin-top: 15px;
+            font-size: 28px;
+            font-weight: 750;
+            letter-spacing: -0.5px;
+        }
+
+        .stat-description {
+            color: #687791;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        /* ---------- TRANSACTION PANEL ---------- */
+
+        .panel {
+            background: #0b1321;
+            border: 1px solid #1d2a3f;
+            border-radius: 13px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 20px 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid #1a2639;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title h2 {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .panel-title-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: #152238;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9db8ff;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search {
+            width: 310px;
+            background: #0a111d;
+            border: 1px solid #28364d;
+            color: white;
+            padding: 10px 13px;
+            border-radius: 8px;
+            outline: none;
+            font-size: 12px;
+        }
+
+        .search::placeholder {
+            color: #66758c;
+        }
+
+        .filter {
+            background: #0a111d;
+            border: 1px solid #28364d;
+            color: #aab5c7;
+            padding: 10px 13px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        /* ---------- TABLE ---------- */
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 13px 14px;
+            color: #718097;
+            background: #0d1727;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 17px 14px;
+            border-top: 1px solid #182437;
+            color: #dce2ec;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(32, 49, 77, 0.25);
+        }
+
+        .vendor-link {
+            color: #f5f7fb;
+            font-weight: 650;
+            text-decoration: none;
+        }
+
+        .vendor-link:hover {
+            color: #83a5ff;
+        }
+
+        .memo {
+            color: #a1adbf;
+            max-width: 190px;
+            line-height: 1.35;
+        }
+
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(61, 94, 203, 0.22);
+            border: 1px solid rgba(80, 120, 255, 0.25);
+            color: #a9bfff;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .confidence {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .confidence.high {
+            color: #31d796;
+        }
+
+        .confidence.medium {
+            color: #f1b53c;
+        }
+
+        .method {
+            color: #a4afc1;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .llm {
+            color: #697891;
+            font-size: 11px;
+        }
+
+        /* ---------- STATUS ---------- */
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 650;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status.auto {
+            background: rgba(20, 190, 125, 0.14);
+            border: 1px solid rgba(20, 190, 125, 0.28);
+            color: #42dba0;
+        }
+
+        .status.auto .status-dot {
+            background: #2ed394;
+        }
+
+        .status.review {
+            background: rgba(240, 175, 45, 0.13);
+            border: 1px solid rgba(240, 175, 45, 0.28);
+            color: #f0b947;
+        }
+
+        .status.review .status-dot {
+            background: #f0b947;
+        }
+
+        .status.client {
+            background: rgba(244, 177, 35, 0.13);
+            border: 1px solid rgba(244, 177, 35, 0.28);
+            color: #f3bd50;
+        }
+
+        .status.client .status-dot {
+            background: #f3bd50;
+        }
+
+        .status.posted {
+            background: rgba(30, 193, 126, 0.14);
+            color: #44dca2;
+            border: 1px solid rgba(30, 193, 126, 0.25);
+        }
+
+        .status.pending {
+            background: rgba(239, 175, 48, 0.13);
+            color: #f0b84d;
+            border: 1px solid rgba(239, 175, 48, 0.25);
+        }
+
+        /* ---------- ACTIONS ---------- */
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+
+        .view-btn {
+            display: inline-block;
+            padding: 8px 13px;
+            border-radius: 7px;
+            border: 1px solid #35445c;
+            background: #101a2b;
+            color: #dce4f2;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .view-btn:hover {
+            background: #18253a;
+        }
+
+        .approve-btn {
+            border: none;
+            padding: 8px 13px;
+            border-radius: 7px;
+            background: #315de5;
+            color: white;
+            font-size: 11px;
+            font-weight: 650;
+            cursor: pointer;
+        }
+
+        .approve-btn:hover {
+            background: #3f6cf0;
+        }
+
+        .posted-label {
+            color: #4bd9a3;
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        /* ---------- FOOTER ---------- */
+
+        .table-footer {
+            padding: 13px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #182437;
+            color: #66758b;
+            font-size: 11px;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 6px;
+        }
+
+        .page {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            border: 1px solid #26364d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8493aa;
+        }
+
+        .page.active {
+            background: #1d3e9f;
+            border-color: #315de5;
+            color: white;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+
+        @media (max-width: 1150px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sidebar {
+                width: 210px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                padding: 22px;
+            }
+
+            .topbar {
+                padding: 0 22px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .panel-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls {
+                width: 100%;
+            }
+
+            .search {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">✦</div>
+            <div class="brand-name">QBO Agent</div>
+        </div>
+
+        <nav class="nav">
+
+            <a href="{{ url_for('home') }}" class="nav-item active">
+                <span class="nav-icon">⌂</span>
+                Dashboard
+            </a>
+
+            <a href="#transactions" class="nav-item">
+                <span class="nav-icon">☷</span>
+                Transactions
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">♧</span>
+                Clients
+            </a>
+
+            <a href="#audit" class="nav-item">
+                <span class="nav-icon">◈</span>
+                Audit Trail
+            </a>
+
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="ai-label">✦ Powered by AI</div>
+            <div class="ai-text">
+                Smarter categorization.<br>
+                Faster closes.
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div>
+                <div class="company-label">
+                    Connected QBO Company
+                </div>
+
+                <div class="company">
+                    <span class="online-dot"></span>
+                    Demo Company
+                </div>
+            </div>
+
+            <div class="user">
+                <div class="avatar">I</div>
+                <span>Indu</span>
+                <span>⌄</span>
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+        <section class="content">
+
+            <!-- HEADER -->
+            <div class="page-header">
+
+                <div>
+                    <h1>QBO Categorization Agent</h1>
+
+                    <div class="subtitle">
+                        AI-powered transaction categorization with
+                        confidence-based routing, client confirmation,
+                        and approval workflows.
+                        All proposals are scoped to this QBO company.
+                    </div>
+                </div>
+
+                <div class="sync-box">
+                    <div class="sync-title">LAST SYNCED</div>
+                    <div class="sync-value">Today · Live Demo</div>
+                </div>
+
+            </div>
+
+
+            <!-- KPI CARDS -->
+            <div class="stats">
+
+                <div class="stat-card blue">
+                    <div class="stat-top">
+                        <div class="stat-label">Uncategorized</div>
+                        <div class="stat-icon">▣</div>
+                    </div>
+
+                    <div class="stat-number">
+                        {{ transactions|length }}
+                    </div>
+
+                    <div class="stat-description">
+                        Transactions awaiting categorization
+                    </div>
+                </div>
+
+
+                <div class="stat-card purple">
+                    <div class="stat-top">
+                        <div class="stat-label">LLM Calls</div>
+                        <div class="stat-icon">✦</div>
+                    </div>
+
+                    <div class="stat-number">
+                        {{ llm_calls }}
+                    </div>
+
+                    <div class="stat-description">
+                        Used only for complex cases
+                    </div>
+                </div>
+
+
+                <div class="stat-card green">
+                    <div class="stat-top">
+                        <div class="stat-label">No LLM Required</div>
+                        <div class="stat-icon">◉</div>
+                    </div>
+
+                    <div class="stat-number">
+                        {{ no_llm_calls }}
+                    </div>
+
+                    <div class="stat-description">
+                        Handled through matching logic
+                    </div>
+                </div>
+
+
+                <div class="stat-card orange">
+
+                    <div class="stat-top">
+                        <div class="stat-label">Pending Approval</div>
+                        <div class="stat-icon">◇</div>
+                    </div>
+
+                    <div class="stat-number">
+                        {{ transactions|selectattr("status", "equalto", "Pending Approval")|list|length }}
+                    </div>
+
+                    <div class="stat-description">
+                        Needs approval before QBO write
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TRANSACTIONS -->
+            <section class="panel" id="transactions">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+                        <div class="panel-title-icon">☷</div>
+                        <h2>Recent Transactions</h2>
+                    </div>
+
+                    <div class="controls">
+
+                        <input
+                            class="search"
+                            type="text"
+                            placeholder="Search by vendor, memo or category..."
+                        >
+
+                        <select class="filter">
+                            <option>All Statuses</option>
+                            <option>Auto-post</option>
+                            <option>Firm review</option>
+                            <option>Client confirmation</option>
+                            <option>Approved & Posted</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Vendor</th>
+                                <th>Amount</th>
+                                <th>Memo</th>
+                                <th>Suggested Category</th>
+                                <th>Confidence</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+
+                        {% for transaction in transactions %}
+
+                            <tr>
+
+                                <td>
+                                    <span style="color:#65748b;">
+                                        {{ transaction.id }}
+                                    </span>
+                                </td>
+
+
+                                <td>
+
+                                    <a
+                                        class="vendor-link"
+                                        href="{{ url_for(
+                                            'transaction_detail',
+                                            transaction_id=transaction.id
+                                        ) }}"
+                                    >
+                                        {{ transaction.vendor }}
+                                    </a>
+
+                                </td>
+
+
+                                <td>
+                                    <strong>
+                                        ₹{{ "%.2f"|format(transaction.amount) }}
+                                    </strong>
+                                </td>
+
+
+                                <td>
+                                    <div class="memo">
+                                        {{ transaction.memo }}
+                                    </div>
+                                </td>
+
+
+                                <td>
+                                    <span class="category-badge">
+                                        {{ transaction.category }}
+                                    </span>
+                                </td>
+
+
+                                <td>
+
+                                    {% if transaction.confidence >= 0.90 %}
+
+                                        <span class="confidence high">
+                                            {{ (transaction.confidence * 100)|round|int }}%
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="confidence medium">
+                                            {{ (transaction.confidence * 100)|round|int }}%
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="method">
+                                        {{ transaction.method }}
+                                    </div>
+
+                                    <div class="llm">
+                                        {% if transaction.llm_called %}
+                                            LLM used
+                                        {% else %}
+                                            No LLM call
+                                        {% endif %}
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if transaction.status == "Approved & Posted" %}
+
+                                        <span class="status posted">
+                                            <span class="status-dot"></span>
+                                            Approved & Posted
+                                        </span>
+
+                                    {% elif transaction.route == "Client confirmation" %}
+
+                                        <span class="status client">
+                                            <span class="status-dot"></span>
+                                            Client Confirmation
+                                        </span>
+
+                                    {% elif transaction.route == "Firm review" %}
+
+                                        <span class="status review">
+                                            <span class="status-dot"></span>
+                                            Firm Review
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="status auto">
+                                            <span class="status-dot"></span>
+                                            Auto-post
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="actions">
+
+                                        <a
+                                            class="view-btn"
+                                            href="{{ url_for(
+                                                'transaction_detail',
+                                                transaction_id=transaction.id
+                                            ) }}"
+                                        >
+                                            View
+                                        </a>
+
+
+                                        {% if transaction.status == "Pending Approval" %}
+
+                                            <form
+                                                method="POST"
+                                                action="{{ url_for(
+                                                    'approve',
+                                                    transaction_id=transaction.id
+                                                ) }}"
+                                                style="margin:0;"
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="approve-btn"
+                                                >
+                                                    Approve
+                                                </button>
+
+                                            </form>
+
+                                        {% elif transaction.status == "Approved & Posted" %}
+
+                                            <span class="posted-label">
+                                                ✓ Posted
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <div class="table-footer">
+
+                    <span>
+                        Showing 1–{{ transactions|length }}
+                        of {{ transactions|length }} transactions
+                    </span>
+
+                    <div class="pagination">
+                        <div class="page">‹</div>
+                        <div class="page active">1</div>
+                        <div class="page">›</div>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>
